@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flipbook Interaktif</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CDN jQuery dan Turn.js -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@4/turn.min.js"></script>
+
+  <style>
+    body {
+      background: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .flipbook {
+      width: 800px;
+      height: 500px;
+    }
+
+    .flipbook div {
+      background: white;
+      width: 100%;
+      height: 100%;
+    }
+
+    .flipbook img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flipbook" id="flipbook"></div>
+
+  <script>
+    const totalPages = 12;
+    const flipbook = document.getElementById('flipbook');
+
+    for (let i = 1; i <= totalPages; i++) {
+      const page = document.createElement('div');
+      const img = document.createElement('img');
+      img.src = `images/page${i}.jpg`;
+      img.alt = `Halaman ${i}`;
+      page.appendChild(img);
+      flipbook.appendChild(page);
+    }
+
+    $('.flipbook').turn({
+      width: 800,
+      height: 500,
+      autoCenter: true,
+      elevation: 50,
+      gradients: true
+    });
+  </script>
+
+</body>
+</html>

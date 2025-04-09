@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Flipbook Per Halaman</title>
+  <title>Flipbook Ukuran Otomatis</title>
   <style>
     body {
       background: #f0f0f0;
@@ -14,21 +14,13 @@
     }
 
     .flipbook {
-      width: 400px;
-      height: 500px;
       margin-bottom: 20px;
-    }
-
-    .flipbook .page {
-      width: 400px;
-      height: 500px;
-      overflow: hidden;
     }
 
     .flipbook .page img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .controls {
@@ -59,9 +51,7 @@
 </head>
 <body>
 
-  <div class="flipbook">
-    <!-- Halaman akan ditambahkan dengan JS -->
-  </div>
+  <div class="flipbook"></div>
 
   <div class="controls">
     <button id="prevBtn">← Sebelumnya</button>
@@ -70,57 +60,64 @@
 
   <!-- jQuery CDN -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- turn.js CDN -->
   <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@4/turn.min.js"></script>
 
   <script>
     const totalPages = 12;
-
     const flipbook = document.querySelector('.flipbook');
+    const firstImage = new Image();
+    firstImage.src = 'images/page1.jpg';
 
-    for (let i = 1; i <= totalPages; i++) {
-      const page = document.createElement('div');
-      page.className = 'page';
+    // Tunggu sampai gambar pertama selesai dimuat untuk ambil ukurannya
+    firstImage.onload = function () {
+      const imgWidth = this.naturalWidth;
+      const imgHeight = this.naturalHeight;
 
-      const img = document.createElement('img');
-      img.src = `images/page${i}.jpg`;
-      img.alt = `Halaman ${i}`;
+      // Set ukuran container flipbook
+      flipbook.style.width = imgWidth + 'px';
+      flipbook.style.height = imgHeight + 'px';
 
-      page.appendChild(img);
-      flipbook.appendChild(page);
-    }
+      // Buat halaman-halaman
+      for (let i = 1; i <= totalPages; i++) {
+        const page = document.createElement('div');
+        page.className = 'page';
+        page.style.width = imgWidth + 'px';
+        page.style.height = imgHeight + 'px';
 
-    $(document).ready(function(){
-      const $flipbook = $('.flipbook');
+        const img = document.createElement('img');
+        img.src = `images/page${i}.jpg`;
+        img.alt = `Halaman ${i}`;
 
-      $flipbook.turn({
-        width: 400,
-        height: 500,
+        page.appendChild(img);
+        flipbook.appendChild(page);
+      }
+
+      // Inisialisasi turn.js setelah semua halaman ditambahkan
+      $('.flipbook').turn({
+        width: imgWidth,
+        height: imgHeight,
         autoCenter: true,
         display: 'single',
         elevation: 50,
         gradients: true
       });
 
-      // Tombol next/prev
-      $('#nextBtn').on('click', function() {
-        $flipbook.turn('next');
+      // Tombol navigasi
+      $('#nextBtn').on('click', function () {
+        $('.flipbook').turn('next');
       });
 
-      $('#prevBtn').on('click', function() {
-        $flipbook.turn('previous');
+      $('#prevBtn').on('click', function () {
+        $('.flipbook').turn('previous');
       });
 
-      // Disable tombol saat di halaman awal/akhir
-      $flipbook.bind('turned', function(event, page, view) {
+      $('.flipbook').bind('turned', function (event, page) {
         $('#prevBtn').prop('disabled', page === 1);
         $('#nextBtn').prop('disabled', page === totalPages);
       });
 
-      // Set awal state tombol
       $('#prevBtn').prop('disabled', true);
-    });
+    };
   </script>
 
 </body>

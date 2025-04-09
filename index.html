@@ -6,15 +6,17 @@
   <style>
     body {
       background: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      padding: 50px;
       font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
     }
 
     .flipbook {
       width: 400px;
       height: 500px;
+      margin-bottom: 20px;
     }
 
     .flipbook .page {
@@ -28,12 +30,42 @@
       height: 100%;
       object-fit: cover;
     }
+
+    .controls {
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #0073aa;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #005e8c;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
 
   <div class="flipbook">
-    <!-- Halaman akan ditambahkan otomatis oleh JavaScript -->
+    <!-- Halaman akan ditambahkan dengan JS -->
+  </div>
+
+  <div class="controls">
+    <button id="prevBtn">← Sebelumnya</button>
+    <button id="nextBtn">Selanjutnya →</button>
   </div>
 
   <!-- jQuery CDN -->
@@ -43,13 +75,10 @@
   <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@4/turn.min.js"></script>
 
   <script>
-    // Jumlah total halaman
-    const totalPages = 37;
+    const totalPages = 12;
 
-    // Ambil elemen flipbook
     const flipbook = document.querySelector('.flipbook');
 
-    // Buat halaman secara otomatis
     for (let i = 1; i <= totalPages; i++) {
       const page = document.createElement('div');
       page.className = 'page';
@@ -62,16 +91,35 @@
       flipbook.appendChild(page);
     }
 
-    // Inisialisasi turn.js setelah halaman dibuat
     $(document).ready(function(){
-      $('.flipbook').turn({
+      const $flipbook = $('.flipbook');
+
+      $flipbook.turn({
         width: 400,
         height: 500,
         autoCenter: true,
-        display: 'single', // satu halaman saja
+        display: 'single',
         elevation: 50,
         gradients: true
       });
+
+      // Tombol next/prev
+      $('#nextBtn').on('click', function() {
+        $flipbook.turn('next');
+      });
+
+      $('#prevBtn').on('click', function() {
+        $flipbook.turn('previous');
+      });
+
+      // Disable tombol saat di halaman awal/akhir
+      $flipbook.bind('turned', function(event, page, view) {
+        $('#prevBtn').prop('disabled', page === 1);
+        $('#nextBtn').prop('disabled', page === totalPages);
+      });
+
+      // Set awal state tombol
+      $('#prevBtn').prop('disabled', true);
     });
   </script>
 
